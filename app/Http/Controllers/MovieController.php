@@ -53,12 +53,13 @@ class MovieController extends Controller
 
         $user = Auth::user();
 
-        $exists = FavoriteMovie::where('user_id', $user->id)
+        $favorite = FavoriteMovie::where('user_id', $user->id)
             ->where('movie_id', $request->movie_id)
-            ->exists();
+            ->first();
 
-        if ($exists) {
-            return response()->json(['success' => false, 'message' => 'Movie already in favorites!'], 400);
+        if ($favorite) {
+            $favorite->delete();
+            return response()->json(['success' => true, 'message' => 'Movie removed from favorites!']);
         }
 
         FavoriteMovie::create([
